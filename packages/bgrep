@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+pkg="bgrep"
+ver="1.0.99"
+homepage="http://debugmo.de/2009/04/bgrep-a-binary-grep"
+desc="Binary Grep"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="--prefix=${installdir}"
+	mkdir ${installdir} ; cd /tmp/${pkg}-${ver}
+	./bootstrap ; ./configure ${buildargs}
+	make ; make install ; cd
+	ln -fs ${installdir}/bin/${pkg} /usr/local/bin/${pkg}
+	ln -fs ${installdir}/share/doc/bgrep /usr/local/share/doc/bgrep
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/bin/${pkg}
+	rm -f /usr/local/share/doc/${pkg}
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
