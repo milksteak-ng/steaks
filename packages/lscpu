@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+pkg="lscpu"
+ver="1.0.1"
+homepage="https://github.com/NanXiao/lscpu"
+desc="lscpu for BSDs"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="PREFIX=${installdir}"
+	mkdir -p ${installdir} ; cd /tmp/${pkg}-${ver}
+	make ; make install ${buildargs}
+	ln -fs ${installdir}/sbin/${pkg} /usr/local/sbin/${pkg}
+	ln -fs ${installdir}/share/man/man1/${pkg}.1 /usr/local/share/man/man1/${pkg}.1
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/sbin/${pkg}
+	rm -f /usr/local/share/man/man1/${pkg}.1
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
