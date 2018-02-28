@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+pkg="osxinfo"
+ver="0.2.1"
+homepage="https://github.com/nbyouri/osxinfo"
+desc="Info program for Mac OS X"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="PREFIX=${installdir}"
+	mkdir ${installdir} ; cd /tmp/${pkg}-${ver}
+	make ; make install ${buildargs} ; cd
+	ln -s ${installdir}/bin/${pkg} /usr/local/bin/${pkg}
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/bin/${pkg}
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
