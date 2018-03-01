@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+pkg="tiv"
+ver="0.0.1u"
+homepage="https://github.com/stefanhaustein/TerminalImageViewer"
+desc="Small program to display images in a terminal using RGB ANSI codes and unicode block graphics characters"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=true
+deps="imagemagick"
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs=""
+	mkdir ${installdir} ; mkdir ${installdir}/bin
+	cd /tmp/${pkg}-${ver}/src/main/cpp
+	make ; cp ${pkg} ${installdir}/bin/${pkg}
+	ln -fs ${installdir}/bin/${pkg} /usr/local/bin/${pkg}
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/bin/${pkg}
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
