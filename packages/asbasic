@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+pkg="asbasic"
+ver="2.5"
+homepage="https://github.com/sigma-1/asbasic"
+desc="BASIC interpreter with Apple II flavor"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="prefix=${installdir}"
+	cd /tmp/${pkg}-${ver} ; ./configure
+	make ; make install ${buildargs}
+	ln -s ${installdir}/bin/${pkg} /usr/local/bin/${pkg}
+	ln -s ${installdir}/lib/lib${pkg}.a /usr/local/lib/lib${pkg}.a
+	ln -s ${installdir}/share/man/man1/${pkg}.1 /usr/local/share/man/man1/${pkg}.1
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/bin/${pkg}
+	rm -f /usr/local/lib/lib${pkg}.a
+	rm -f /usr/local/share/man/man1/${pkg}.1
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
