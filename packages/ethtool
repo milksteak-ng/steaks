@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+pkg="ethtool"
+ver="3.14"
+homepage="https://www.kernel.org/pub/software/network/ethtool"
+desc="ethtool is a small utility for examining and tuning your ethernet-based network interface."
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="--prefix=${installdir}"
+	mkdir ${installdir} ; cd /tmp/${pkg}-${ver}
+	./autogen.sh ; ./configure ${buildargs}
+	make ; make install
+	ln -fs ${installdir}/sbin/${pkg} /usr/local/sbin/${pkg}
+	ln -fs ${installdir}/share/man/man8/${pkg}.8 /usr/local/share/man/man8/${pkg}.8
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/sbin/${pkg}
+	rm -f /usr/local/share/man/man8/${pkg}.8
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
