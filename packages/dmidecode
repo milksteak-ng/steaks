@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+pkg="dmidecode"
+ver="3.1u"
+homepage="http://www.nongnu.org/dmidecode"
+desc="Dmidecode reports information about your system's hardware as described in your system BIOS according to the SMBIOS/DMI standard."
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="prefix=${installdir}"
+	mkdir ${installdir} ; cd /tmp/${pkg}-${ver}
+	make ; make ${buildargs} install ; cd
+	ln -fs ${installdir}/sbin/biosdecode /usr/local/sbin/biosdecode
+	ln -fs ${installdir}/sbin/dmidecode /usr/local/sbin/dmidecode
+	ln -fs ${installdir}/sbin/ownership /usr/local/sbin/ownership
+	ln -fs ${installdir}/sbin/vpddecode /usr/local/sbin/vpddecode
+	ln -fs ${installdir}/share/man/man8/biosdecode.8 /usr/local/share/man/man8/biosdecode.8
+	ln -fs ${installdir}/share/man/man8/dmidecode.8 /usr/local/share/man/man8/dmidecode.8
+	ln -fs ${installdir}/share/man/man8/ownership.8 /usr/local/share/man/man8/ownership.8
+	ln -fs ${installdir}/share/man/man8/vpddecode.8 /usr/local/share/man/man8/vpddecode.8
+	ln -fs ${installdir}/share/doc/dmidecode /usr/local/share/doc/dmidecode
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -f /usr/local/sbin/biosdecode
+	rm -f /usr/local/sbin/dmidecode
+	rm -f /usr/local/sbin/ownership
+	rm -f /usr/local/sbin/vpddecode
+	rm -f /usr/local/share/man/man8/biosdecode.8
+	rm -f /usr/local/share/man/man8/dmidecode.8
+	rm -f /usr/local/share/man/man8/ownership.8
+	rm -f /usr/local/share/man/man8/vpddecode.8
+	rm -rf /usr/local/share/doc/dmidecode
+	rm -rf ${installdir}
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
