@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+pkg="libradiotap"
+ver="1.0u"
+homepage="http://www.radiotap.org"
+desc="Radiotap parser libraries"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="prefix=${installdir}"
+	mkdir ${installdir} ; mkdir ${installdir}/bin ; mkdir ${installdir}/lib
+	cd /tmp/${pkg}-${ver} ; cmake CMakeLists.txt ; make
+	cp /tmp/${pkg}-${ver}/parse ${installdir}/bin/parse
+	cp /tmp/${pkg}-${ver}/libradiotap.dylib ${installdir}/lib/libradiotap.dylib
+	ln -fs ${installdir}/bin/parse /usr/local/bin/parse
+	ln -fs ${installdir}/lib/libradiotap.dylib /usr/local/lib/libradiotap.dylib
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -f /usr/local/bin/parse
+	rm -f /usr/local/lib/libradiotap.dylib
+	rm -rf ${installdir}
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
