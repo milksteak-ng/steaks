@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+pkg="csrstat"
+ver="1.8u"
+homepage="https://github.com/Piker-Alpha/csrstat"
+desc="Command line tool to get the active System Integrity Protection status"
+tgz="${pkg}-${ver}.tar.gz"
+url="https://github.com/mspkg/${pkg}/archive/${ver}.tar.gz"
+has_deps=false
+deps=""
+installdir="/usr/local/Steakhouse/${pkg}-${ver}"
+
+
+#####################################################
+function getpkg() {
+	wget -O /tmp/${tgz} ${url} -q --show-progress
+}
+#####################################################
+function unpkg() {
+	cd /tmp ; tar -xvzf ${tgz}
+}
+#####################################################
+function instpkg() {
+	buildargs="PREFIX=${installdir}"
+	mkdir -p ${installdir} ; cd /tmp/${pkg}-${ver}
+	make ; make install ${buildargs}
+	ln -fs ${installdir}/sbin/${pkg} /usr/local/sbin/${pkg}
+	rm -f /tmp/${tgz} ; rm -rf /tmp/${pkg}-${ver}
+}
+#####################################################
+function uninst() {
+	rm -rf ${installdir}
+	rm -f /usr/local/sbin/${pkg}
+	rm -f /usr/local/opt/milksteak/steaks/${pkg}
+}
